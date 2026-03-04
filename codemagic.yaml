@@ -1,0 +1,18 @@
+workflows:
+  android-build:
+    name: Kamus Jepang Android Build
+    max_build_duration: 60
+
+    environment:
+      node: 22
+      java: 17
+
+    scripts:
+      - npm install
+      - npx cap add android || true
+      - npx cap sync
+      - cd android
+      - ./gradlew assembleDebug
+
+    artifacts:
+      - android/app/build/outputs/apk/debug/*.apk

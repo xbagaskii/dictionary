@@ -1,15 +1,25 @@
 {
   "name": "dictionoary",
   "version": "1.0.0",
-  "description": "",
-  "main": "service-worker.js",
+  "description": "Offline Japanese-Indonesian dictionary built with PWA + Capacitor",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No automated tests configured\"",
+    "cap:add:android": "npx cap add android",
+    "cap:sync": "npx cap sync",
+    "android:build:debug": "npm run cap:add:android || true && npm run cap:sync && cd android && ./gradlew assembleDebug"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@capacitor/android": "^8.1.0"
+    "@capacitor/android": "^8.1.0",
+    "@capacitor/core": "^8.1.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.1.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   }
 }
