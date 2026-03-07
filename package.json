@@ -5,6 +5,8 @@
   "private": true,
   "scripts": {
     "test": "echo \"No automated tests configured\"",
+    "data:fill-romaji": "node scripts/fill-romaji.mjs",
+    "data:fill-romaji:force": "node scripts/fill-romaji.mjs --force",
     "cap:add:android": "npx cap add android",
     "cap:sync": "npx cap sync",
     "android:build:debug": "npm run cap:add:android || true && npm run cap:sync && cd android && ./gradlew assembleDebug"
@@ -14,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@capacitor/android": "^8.1.0",
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/core": "^8.1.0"
   },
   "devDependencies": {

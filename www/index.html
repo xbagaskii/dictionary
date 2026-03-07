@@ -6,29 +6,30 @@
   <meta name="theme-color" content="#121212">
   <title>Dictionary App</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="css/style.css?v=20260303-1">
+  <link rel="stylesheet" href="css/style.css?v=20260308-4">
 </head>
 <body>
   <div id="app">
-    <h1>Dictionary App</h1>
+    <h1>MY KOTOBOKO</h1>
 
     <p id="statusText">Memuat database...</p>
 
-    <input type="text" id="searchInput" placeholder="Masukkan kata Jepang/arti Indonesia">
+    <div class="search-dock">
+      <input type="text" id="searchInput" placeholder="Masukkan kata Jepang/arti Indonesia">
 
-    <select id="filterJLPT">
-      <option value="">Semua Level</option>
-      <option value="N5">N5</option>
-      <option value="N4">N4</option>
-      <option value="N3">N3</option>
-      <option value="N2">N2</option>
-      <option value="N1">N1</option>
-    </select>
+      <select id="filterJLPT">
+        <option value="">Semua Level</option>
+        <option value="N5">N5</option>
+        <option value="N4">N4</option>
+        <option value="N3">N3</option>
+        <option value="N2">N2</option>
+        <option value="N1">N1</option>
+      </select>
+    </div>
 
-    <div id="resultMeta"></div>
     <div id="results"></div>
   </div>
 
-  <script type="module" src="js/app.js?v=20260303-1"></script>
+  <script type="module" src="js/app.js?v=20260308-3"></script>
 </body>
 </html>

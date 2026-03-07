@@ -1,3 +1,5 @@
+import { kanaToRomaji } from "./romaji.mjs";
+
 const DICTIONARY_URLS = ["./data/dictionary.json", "./assets/dictionary_final_id.json"];
 const BOOKMARK_KEY = "bookmarks";
 
@@ -12,10 +14,15 @@ function normalizeEntry(entry) {
     entry?.translation ??
     "";
 
+  const word = String(entry?.word ?? "").trim();
+  const reading = String(entry?.reading ?? "").trim();
+  const romaji =
+    String(entry?.romaji ?? "").trim() || kanaToRomaji(reading) || kanaToRomaji(word);
+
   return {
-    word: String(entry?.word ?? "").trim(),
-    reading: String(entry?.reading ?? "").trim(),
-    romaji: String(entry?.romaji ?? "").trim(),
+    word,
+    reading,
+    romaji,
     meaning_id: String(meaning).trim(),
     jlpt: String(entry?.jlpt ?? "").trim().toUpperCase(),
   };

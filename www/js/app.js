@@ -1,7 +1,9 @@
 import { loadDictionary } from "./storage.js";
+import { kanaToRomaji } from "./romaji.mjs";
 import { searchWord } from "./search.js";
 
 let dictionary = [];
+const DISPLAY_LIMIT = 220;
 
 function el(id) {
   return document.getElementById(id);
@@ -18,14 +20,21 @@ function displayResults(results) {
 
   const html = results
     .map(
-      (entry) => `
+      (entry) => {
+        const romaji =
+          String(entry?.romaji ?? "").trim() ||
+          kanaToRomaji(entry?.reading ?? "") ||
+          kanaToRomaji(entry?.word ?? "");
+
+        return `
       <div class="card">
         <div class="word">${entry.word || "-"}</div>
-        <div>${entry.reading || "-"} ${entry.romaji ? `(${entry.romaji})` : ""}</div>
+        <div>${entry.reading || "-"} ${romaji ? `(${romaji})` : ""}</div>
         <div class="meaning">${entry.meaning_id || "-"}</div>
         <div class="jlpt">Level: ${entry.jlpt || "-"}</div>
       </div>
-    `
+    `;
+      }
     )
     .join("");
 
@@ -36,13 +45,48 @@ function runSearch() {
   const keyword = el("searchInput").value;
   const jlpt = el("filterJLPT").value;
 
-  const results = searchWord(dictionary, keyword, jlpt);
-  el("resultMeta").textContent = `Menampilkan ${results.length} dari ${dictionary.length} entri.`;
-  displayResults(results);
+  const matches = searchWord(dictionary, keyword, jlpt);
+  const visibleResults = matches.slice(0, DISPLAY_LIMIT);
+  displayResults(visibleResults);
+}
+
+function debounce(fn, waitMs) {
+  let timer = null;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), waitMs);
+  };
+}
+
+function removeLegacyResultMeta() {
+  const legacyMeta = el("resultMeta");
+  if (legacyMeta) {
+    legacyMeta.remove();
+  }
+}
+
+async function clearLegacyServiceWorkerCache() {
+  if ("serviceWorker" in navigator) {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map((registration) => registration.unregister()));
+  }
+
+  if ("caches" in window) {
+    const cacheNames = await caches.keys();
+    await Promise.all(
+      cacheNames
+        .filter((cacheName) => cacheName.startsWith("kamus-cache"))
+        .map((cacheName) => caches.delete(cacheName))
+    );
+  }
 }
 
 async function initApp() {
   const statusText = el("statusText");
+  removeLegacyResultMeta();
+  clearLegacyServiceWorkerCache().catch((error) => {
+    console.warn("Tidak bisa membersihkan cache lama:", error);
+  });
 
   try {
     dictionary = await loadDictionary();
@@ -53,14 +97,9 @@ async function initApp() {
     console.error(error);
   }
 
-  el("searchInput").addEventListener("input", runSearch);
+  const runSearchDebounced = debounce(runSearch, 90);
+  el("searchInput").addEventListener("input", runSearchDebounced);
   el("filterJLPT").addEventListener("change", runSearch);
-
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js").catch((error) => {
-      console.error("SW register failed:", error);
-    });
-  }
 }
 
 document.addEventListener("DOMContentLoaded", initApp);
